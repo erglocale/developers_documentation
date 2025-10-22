@@ -15,12 +15,6 @@
       "integration-guide", 
       "dashboard",
       "api-reference"
-    ],
-    "groups":[
-      {
-        "group": "API reference",
-        "openapi": "openapi.json"
-      }
     ]
   },
   "logo": {
