@@ -8,7 +8,7 @@
     {
       "url": "https://energy.erglocale.com"
     }
-  ]
+  ],
   "paths": {
     "/api/v1/login/access-token": {
       "post": {
