@@ -49,7 +49,9 @@
       "display": "interactive"
     },
     "examples": {
-      "languages": ["javascript", "curl", "python"]
+      "languages": ["javascript", "curl", "python"],
+      "defaults": "required",
+      "prefill": true
     }
   },
   "logo": {
