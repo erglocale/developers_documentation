@@ -4,6 +4,11 @@
     "title": "ergLocale API",
     "version": "0.1.0"
   },
+  "servers": [
+    {
+      "url": "https://api.example.com/v1"
+    }
+  ]
   "paths": {
     "/api/v1/login/access-token": {
       "post": {
