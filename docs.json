@@ -72,10 +72,8 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/example",
       "linkedin": "https://www.linkedin.com/company/example",
-      "github": "https://github.com/example",
-      "slack": "https://example.com/community"
+      "reddit": "https://github.com/example"
     },
     "links": [
       {
