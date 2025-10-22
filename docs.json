@@ -8,93 +8,18 @@
     "light": "#F8FAFC",
     "dark": "#0F172A"
   },
+  
   "navigation": {
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs"
-        },
-        {
-          "anchor": "Changelog",
-          "href": "https://mintlify.com/docs/changelog"
-        }
-      ]
-    },
-    "languages": [ 
-      {
-        "language": "en",
-        "dropdowns": [
-          {
-            "dropdown": "Documentation",
-            "icon": "book",
-            "description": "How to use the Example Co. product",
-            "pages": [
-              {
-                "group": "Getting started",
-                "pages": ["index", "quickstart"]
-              },
-              {
-                "group": "Customization",
-                "pages": ["settings", "users", "features"]
-              },
-              {
-                "group": "Billing",
-                "pages": [
-                  "billing/overview",
-                  "billing/payments",
-                  "billing/subscriptions"
-                ]
-              }
-            ]
-          },
-          {
-            "dropdown": "Changelog",
-            "icon": "history",
-            "description": "Updates and changes",
-            "pages": ["changelog"]
-          }
-        ]
-      },
-      {
-        "language": "es",
-        "dropdowns": [
-          {
-            "dropdown": "Documentación",
-            "icon": "book",
-            "description": "Cómo usar el producto de Example Co.",
-            "pages": [
-              {
-                "group": "Comenzando",
-                "pages": ["es/index", "es/quickstart"]
-              },
-              {
-                "group": "Personalización",
-                "pages": ["es/settings", "es/users", "es/features"]
-              },
-              {
-                "group": "Billing",
-                "pages": [
-                  "es/billing/overview",
-                  "es/billing/payments",
-                  "es/billing/subscriptions"
-                ]
-              }
-            ]
-          },
-          {
-            "dropdown": "Changelog",
-            "icon": "history",
-            "description": "Actualizaciones y cambios",
-            "pages": ["es/changelog"]
-          }
-        ]
-      }
+    "pages": [
+      "getting-started",
+      "integration-guide", 
+      "dashboard",
+      "api-reference"
     ]
   },
   "logo": {
-    "light": "/logo-light.svg",
-    "dark": "/logo-dark.svg",
+    "light": "/ergLocale.png",
+    "dark": "/ergLocale.png",
     "href": "https://example.com"
   },
   "navbar": {
