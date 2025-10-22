@@ -24,7 +24,7 @@ Before you begin, ensure you have:
 
   For experimentation and integration testing.
 
-  **Base URL: **[**https://sandbox.energy.erglocale.com/v1**](https://sandbox.energy.erglocale.com/v1)
+  \*\*Base URL: \*\*[**https://sandbox.energy.erglocale.com/v1**](https://sandbox.energy.erglocale.com/v1)
 </Info>
 
 <Info>
@@ -83,3 +83,52 @@ Sandbox API keys and credentials can be requested via\
 📧 [developer-support@erglocale.com](mailto:developer-support@erglocale.com)
 
 > 🔒 The sandbox data resets daily, so you can repeatedly test onboarding and integrations safely.
+
+## Step 3: Your first api call, create a network
+
+```bash
+curl -X POST "https://api.energy.erglocale.com/api/v1/networks" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {access_token}" \
+  -d '{
+  "name": "Site 1",
+  "description": "Primary solar installation",
+  "max_capacity": 50,
+  "solar_capacity": 45,
+  "latitude": 51.178,
+  "longitude": -1.826,
+  "inverter_ac_capacity": 40,
+  "dc_capacity": 45.5,
+  "install_date": "2023-10-26",
+  "module_type": "module_b",
+  "module_tilt_angle": 30,
+  "module_azimuth_angle": 180,
+  "inverter_efficiency": 98.5
+}'
+```
+
+With correct values, you'll receive a response containing the network object and a network will get created in the system. 
+
+```json
+{
+  "name": "Site 1",
+  "description": "Primary solar installation",
+  "max_capacity": 50,
+  "solar_capacity": 45,
+  "latitude": 51.178,
+  "longitude": -1.826,
+  "inverter_ac_capacity": 40,
+  "dc_capacity": 45.5,
+  "install_date": "2023-10-26",
+  "module_type": "module_b",
+  "module_tilt_angle": 30,
+  "module_azimuth_angle": 180,
+  "inverter_efficiency": 98.5,
+  "id": "string",
+  "owner_id": "string"
+}
+```
+
+## All done!
+
+Congratulations on making your first call to the **energyBrain** API! To learn more about using our API, you have a couple of options:
