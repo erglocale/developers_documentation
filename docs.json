@@ -1,10 +1,10 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
+  "theme": "mint",
   "name": "Example Co.",
   "description": "Example Co. is a company that provides example content and placeholder text.",
   "colors": {
-    "primary": "#3B82F6",
+    "primary": "#f97316",
     "light": "#F8FAFC",
     "dark": "#0F172A"
   },
@@ -16,26 +16,11 @@
         "description": "How to use the Example Co. product",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Guides",
             "pages": [
-              "index",
-              "quickstart"
-            ]
-          },
-          {
-            "group": "Customization",
-            "pages": [
-              "settings",
-              "users",
-              "features"
-            ]
-          },
-          {
-            "group": "Billing",
-            "pages": [
-              "billing/overview",
-              "billing/payments",
-              "billing/subscriptions"
+              "getting-started",
+              "integration-guide",
+              "dashboard"
             ]
           }
         ]
@@ -52,19 +37,9 @@
             ]
           },
           {
-            "group": "Endpoints",
-            "openapi": {
-              "source": "openapi.json"
-            }
+            "group": "API reference",
+            "openapi":  "openapi.json"
           }
-        ]
-      },
-      {
-        "dropdown": "Changelog",
-        "icon": "history",
-        "description": "Updates and changes",
-        "pages": [
-          "changelog"
         ]
       }
     ]
@@ -78,8 +53,8 @@
     }
   },
   "logo": {
-    "light": "/logo-light.svg",
-    "dark": "/logo-dark.svg",
+    "light": "/ergLocale.png",
+    "dark": "/ergLocale.png",
     "href": "https://example.com"
   },
   "navbar": {
