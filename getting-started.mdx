@@ -1,4 +1,4 @@
-##  **Overview**
+## **Overview**
 
 The **energyBrain platform** by **ergLocale** allows smart energy forecasting and energy optimization for EV fleets and charging sites.\
 You can interact with it using our **dashboard UI** or integrate our **REST API**.
@@ -10,7 +10,7 @@ This Getting Started guide walks you through:
 - Sandbox (Try‑Before‑You‑Integrate) environment
 - A simple step‑by‑step energy optimization use case using both UI and APIs.
 
-### 1. Prerequisites
+### Prerequisites
 
 Before you begin, ensure you have:
 
@@ -32,5 +32,54 @@ Before you begin, ensure you have:
 
   Live environment for production usage
 
-  **Base URL: **[**https://energy.erglocale.com**](https://sandbox.energy.erglocale.com/v1)**/v1**
+  [******Base URL: https://energy.erglocale.com/v1******](https://sandbox.energy.erglocale.com/v1)
 </Info>
+
+> 💡 **Tip:**\
+> Always start in the **sandbox** before connecting your real CSMS or live chargers.
+
+## Step 1: Authentication, get an API access token
+
+First, call the **energyBrain** OAuth API using `client_id` and `client_secret`. **energyBrain** uses **OAuth 2.0 – Client Credentials** flow to authorize access.
+
+This guide uses cURL for examples, but you can use Postman.
+
+**Request Access Token**
+
+```bash
+curl -X POST https://api.energy.erglocale.com/oauth/token \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "client_secret=YOUR_CLIENT_SECRET" \
+  -d "grant_type=client_credentials"
+```
+
+**Response**
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+```
+
+**Use this token in all API calls**
+
+```bash
+Authorization: Bearer {access_token}
+```
+
+## Step 2: Try Before You Integrate — The Sandbox Environment
+
+The **Sandbox API** simulates:
+
+- Networks with sample solar sites
+- Virtual charge points and vehicle data
+- Predicted solar and grid optimization results
+
+This allows you to test and explore API features with **no effect on production**.
+
+Sandbox API keys and credentials can be requested via\
+📧 [developer-support@erglocale.com](mailto:developer-support@erglocale.com)
+
+> 🔒 The sandbox data resets daily, so you can repeatedly test onboarding and integrations safely.
