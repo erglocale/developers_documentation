@@ -44,6 +44,12 @@
       }
     ]
   },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/getting-started"
+    }
+  ],
   "api": {
     "playground": {
       "display": "interactive"
@@ -54,11 +60,6 @@
       "prefill": true
     }
   },
-  "servers": [
-    {
-      "url": "https://energy.erglocale.com"
-    }
-  ],
   "logo": {
     "light": "/ergLocale.png",
     "dark": "/ergLocale.png",
