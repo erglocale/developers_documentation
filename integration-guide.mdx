@@ -1,0 +1,67 @@
+### Overview
+
+If your organization already operates a **Charging Station Management System (CSMS)**—for example, by using the **OCPP (Open Charge Point Protocol)** as the communication layer between your backend and the chargers—you can integrate **energyBrain APIs** as an **energy optimization layer**.
+
+energyBrain runs parallel to your CSMS and provides charging schedules, solar forecasts, and grid management intelligence. These insights can then be used by your CSMS to control power delivery to each charger dynamically.
+
+## 1. Integration Architecture
+
+### Components
+
+| **Component**   | **Role**                                                                   |
+| :-------------- | :------------------------------------------------------------------------- |
+| energyBrain API | Optimization and forecasting service (solar, grid, load).                  |
+| CSMS            | Manages chargers and communicates via OCPP 1.6 / 2.0.1 with charge points. |
+| Charge Points   | Physical or virtual EVSE units executing commands from the CSMS.           |
+
+Your CSMS continuously exchanges data with energyBrain:
+
+1. **Sends site and session data** → via /networks, /chargepoints, /vehicles, /sessions
+2. **Receives optimized charging schedule** → via /optimizations
+3. **Implements optimized power limits** → in the chargers through OCPP or other control logic
+
+## 2. Integration Workflow (OCPP-Based Example)
+
+| **CSMS Event**                              | **Corresponding energyBrain Action**                                                                                                                                                                                                                                                       |
+| :------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BootNotification                            | When a new charge point connects to CSMS for the first time, register that unit in energyBrain using the /chargepoints endpoint.                                                                                                                                                           |
+| Authorize / StartTransaction                | Before initiating a session, ensure that the vehicle is registered in energyBrain (/vehicles). If the vehicle doesn’t exist, create it dynamically using available CSMS data (VIN, license plate, battery capacity, etc.). Then create a new charging session using /sessions.             |
+| MeterValues (Periodic SoC / Energy Updates) | It’s the responsibility of the CSMS to regularly update the vehicle’s SoC and relevant telemetry in energyBrain via /vehicles/{id} or a SoC update endpoint. These updates allow the optimization algorithms to stay accurate and real‑time.                                               |
+| StopTransaction                             | Mark the associated charging session as complete in energyBrain so the system can learn from actual energy transfer and update forecasts.                                                                                                                                                  |
+| Scheduled Optimization Routine              | At defined intervals (e.g., every 15–30 minutes), call the /optimizations endpoint to retrieve the latest optimized power schedule for the network. Use this data to adjust power limits using either native logic or by sending OCPP SetChargingProfile/SetSchedule commands to chargers. |
+
+> ### 🔑 Before Requesting Optimization
+>
+> Before calling the /optimizations endpoint, confirm that:
+>
+> 1. The **network** (site) and its configuration — including grid and solar capacity — exist.
+> 2. All **charge points** used in the session are registered.
+> 3. Every active **vehicle** has an entry in /vehicles.
+> 4. **State of Charge (SoC)** and **target SoC** values are up to date.
+> 5. An active **charging session** exists between the vehicle and its charger.
+>
+> ⚠️ Optimization accuracy depends on how current the vehicle SoC data is.
+
+**Example Vehicle Sync Flow**
+
+```python index.py
+def on_start_transaction(event):
+    # Ensure the vehicle exists
+    vehicle = api.get_vehicle(event.vin)
+    if not vehicle:
+        api.create_vehicle(
+            name=event.vehicle_name,
+            vin=event.vin,
+            license_plate=event.license_plate,
+            battery_capacity_kwh=event.battery_capacity,
+            current_soc=event.initial_soc,
+            target_soc=event.target_soc
+        )
+
+    # Create the charging session in energyBrain
+    api.create_session(vehicle_id=vehicle["id"], chargepoint_id=event.cp_id)
+
+def on_meter_values(event):
+    # Keep updating vehicle SoC to maintain optimization accuracy
+    api.update_vehicle_soc(event.vin, event.current_soc)
+```
