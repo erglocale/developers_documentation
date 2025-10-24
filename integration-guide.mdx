@@ -1,5 +1,3 @@
-### Overview
-
 If your organization already operates a **Charging Station Management System (CSMS)**—for example, by using the **OCPP (Open Charge Point Protocol)** as the communication layer between your backend and the chargers—you can integrate **energyBrain APIs** as an **energy optimization layer**.
 
 energyBrain runs parallel to your CSMS and provides charging schedules, solar forecasts, and grid management intelligence. These insights can then be used by your CSMS to control power delivery to each charger dynamically.
@@ -26,7 +24,7 @@ Your CSMS continuously exchanges data with energyBrain:
 | :------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | BootNotification                            | When a new charge point connects to CSMS for the first time, register that unit in energyBrain using the /chargepoints endpoint.                                                                                                                                                           |
 | Authorize / StartTransaction                | Before initiating a session, ensure that the vehicle is registered in energyBrain (/vehicles). If the vehicle doesn’t exist, create it dynamically using available CSMS data (VIN, license plate, battery capacity, etc.). Then create a new charging session using /sessions.             |
-| MeterValues (Periodic SoC / Energy Updates) | It’s the responsibility of the CSMS to regularly update the vehicle’s SoC and relevant telemetry in energyBrain via /vehicles/{id} or a SoC update endpoint. These updates allow the optimization algorithms to stay accurate and real‑time.                                               |
+| MeterValues (Periodic SoC / Energy Updates) | It’s the responsibility of the CSMS to regularly update the vehicle’s SoC and relevant telemetry in energyBrain via /vehicles/id or a SoC update endpoint. These updates allow the optimization algorithms to stay accurate and real‑time.                                                 |
 | StopTransaction                             | Mark the associated charging session as complete in energyBrain so the system can learn from actual energy transfer and update forecasts.                                                                                                                                                  |
 | Scheduled Optimization Routine              | At defined intervals (e.g., every 15–30 minutes), call the /optimizations endpoint to retrieve the latest optimized power schedule for the network. Use this data to adjust power limits using either native logic or by sending OCPP SetChargingProfile/SetSchedule commands to chargers. |
 
@@ -65,3 +63,220 @@ def on_meter_values(event):
     # Keep updating vehicle SoC to maintain optimization accuracy
     api.update_vehicle_soc(event.vin, event.current_soc)
 ```
+
+## 3. Requesting Optimization Schedules
+
+Once your **network**, **charge points**, **vehicles**, and **sessions** are onboarded, the /optimizations API helps you fetch optimized energy schedules.
+
+This endpoint can return **two kinds of responses**, depending on whether you request OCPP‑formatted data or standard schedules for your own control logic.
+
+```bash
+GET /optimizations?network_id={network_id}&getChargingProfiles={true|false}
+```
+
+| **Parameter**       | **Type** | **Required** | **Description**                                                                                                                                                          |
+| :------------------ | :------- | :----------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| network_id          | String   | ✅            | The unique ID of the network (site) for which you want optimization data.                                                                                                |
+| getChargingProfiles | Boolean  | ❌            | If true, the response includes OCPP‑compliant “chargingProfile” objects you can apply directly to charge points. Defaults to false, returning standard time–power pairs. |
+
+### 🔹 Example 1 – Request Normal Optimization Schedule
+
+```bash
+curl -X GET "https://api.energy.erglocale.com/v1/optimizations?network_id=main_depot&getChargingProfiles=false" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+**Response**
+
+```json
+{
+  "network_id": "main_depot",
+  "optimized_schedule": [
+    { "time": "2025-10-22T06:00:00Z", "power_kw": 15 },
+    { "time": "2025-10-22T07:00:00Z", "power_kw": 10 }
+  ]
+}
+```
+
+You receive **generic time–power data** that you can interpret and apply using your own load‑management logic or APIs.
+
+### 🔹 Example 2 – Request OCPP‑Formatted Optimization Schedules
+
+```bash
+curl -X GET "https://api.energy.erglocale.com/v1/optimizations?network_id=main_depot&getChargingProfiles=true" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+**Response**
+
+```json
+[
+  {
+    "id": "string",
+    "data_points": [
+      {
+        "time": "2025-10-24T05:36:02.714Z",
+        "limit": 0,
+        "source": "solar"
+      }
+    ],
+    "cpid": "string",
+    "setChargingProfilePDU": {
+      "connectorId": 0,
+      "csChargingProfiles": {
+        "chargingProfileId": 0,
+        "transactionId": 0,
+        "stackLevel": 0,
+        "chargingProfilePurpose": "TxProfile",
+        "chargingProfileKind": "Absolute",
+        "recurrencyKind": "Daily",
+        "validFrom": "2025-10-24T05:36:02.714Z",
+        "validTo": "2025-10-24T05:36:02.714Z",
+        "chargingSchedule": {
+          "duration": 0,
+          "startSchedule": "2025-10-24T05:36:02.714Z",
+          "chargingRateUnit": "A",
+          "chargingSchedulePeriod": [
+            {
+              "startPeriod": 0,
+              "limit": 0,
+              "numberPhases": 3
+            }
+          ],
+          "minChargingRate": 0
+        }
+      }
+    }
+  }
+]
+```
+
+> ✅ When `getChargingProfiles=true`, the endpoint sends ready-to‑apply OCPP payloads.\
+> You can forward these directly to your charge points via your CSMS WebSocket interface using **SetChargingProfile** or **SetChargingSchedule** calls — no transformation needed. The response includes `setChargingProfilePDU`, which is the OCPP based ChargingProfile
+
+### 🔹 Example Code (With getChargingProfiles Parameter)
+
+```python index.py
+import requests
+import logging
+
+API_BASE = "https://api.energy.erglocale.com/v1"
+TOKEN = "YOUR_ACCESS_TOKEN"
+NETWORK_ID = "main_depot"
+
+def get_optimization_schedule(network_id: str, get_charging_profiles: bool):
+    url = f"{API_BASE}/optimizations"
+    headers = {"Authorization": f"Bearer {TOKEN}"}
+    params = {
+        "network_id": network_id,
+        "getChargingProfiles": str(get_charging_profiles).lower()  # "true" or "false"
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+    response.raise_for_status()
+    return response.json()
+
+def example_use_case():
+    # If you want OCPP-ready messages:
+    data = get_optimization_schedule(NETWORK_ID, get_charging_profiles=True)
+
+    if "ocpp_schedules" in data:
+        logging.info("Received OCPP-based optimization schedules.")
+        for schedule in data["ocpp_schedules"]:
+            send_ocpp_profile(schedule)
+    else:
+        logging.info("Received normal schedule data — applying with internal logic.")
+        for slot in data["optimized_schedule"]:
+            apply_internal_power_limit(slot)
+
+def send_ocpp_profile(schedule):
+    """
+    Send profile directly to charger through your OCPP backend.
+    Typically this will be a SetChargingProfile CALL message via WebSocket.
+    """
+    print(f"Sending to charger {schedule['charger_id']}:\n", schedule)
+
+def apply_internal_power_limit(slot):
+    """Example placeholder for applying non-OCPP power limits."""
+    print(f"Setting {slot['power_kw']} kW limit at {slot['time']} using internal logic.")
+
+if __name__ == "__main__":
+    example_use_case()
+```
+
+### 🔹 Summary — getChargingProfiles Parameter Behavior
+
+| **Value**       | **Response Format**                       | **Best for**                                                           |
+| :-------------- | :---------------------------------------- | :--------------------------------------------------------------------- |
+| false (default) | Generic time–power schedule               | Non‑OCPP systems or custom control logic                               |
+| true            | Full OCPP “chargingProfile” JSON payloads | OCPP‑enabled CSMS systems that can forward SetChargingProfile messages |
+
+> ### ✅ Pro Tip
+>
+> You can maintain two integration modes:
+>
+> - During **sandbox testing**, use getChargingProfiles=false to inspect and validate power algorithms.
+> - For **production** with OCPP devices, enable getChargingProfiles=true and pass those responses directly into your CSMS’s **SetChargingProfile** pipeline — zero translation required.
+
+## 4. Example Full Integration Logic
+
+A combined flow showing all the integration points:
+
+```python index.py
+def process_new_session(event):
+    # 1. Vehicle sync
+    if not api.vehicle_exists(event.vin):
+        api.create_vehicle(...)
+
+    # 2. Create charging session
+    session = api.create_session(vehicle_id=event.vehicle_id, chargepoint_id=event.cp_id)
+
+    # 3. Get optimized schedule
+    optimization = api.get_optimization(event.network_id)
+
+    # 4. Apply optimized schedule to the charger
+    for slot in optimization["optimized_schedule"]:
+        power = slot["power_kw"]
+        time = slot["time"]
+        send_ocpp_schedule(connector_id=1, power_limit_kw=power, start=time)
+
+def periodic_soc_update(event):
+    api.update_vehicle_soc(event.vin, event.soc)
+```
+
+## 5. Testing in the Sandbox Environment
+
+Test thoroughly before connecting live CSMS systems.
+
+1. Request sandbox credentials ([developer-support@erglocale.com](mailto:developer-support@erglocale.com)).
+2. Access: `https://sandbox.energy.erglocale.com/v1`
+3. Create mock **networks**, **vehicles**, and **chargepoints** in the Sandbox Dashboard.
+4. Simulate OCPP messages and call energyBrain APIs.
+5. Validate that returned optimization schedules map correctly to OCPP SetChargingSchedule messages.
+6. Adjust time synchronization and power limit conversions as required by your chargers.
+
+## 6. Going Live
+
+When the integration is stable in sandbox:
+
+1. Request production API credentials.
+2. Update base URL →
+
+   ```bash
+   https://api.energy.erglocale.com
+   ```
+3. Keep **OAuth token refresh logic** implemented (tokens expire).
+4. Use proper **rate limit handling** (typically 60 req/min).
+5. Gradually onboard one site before scaling to all networks.
+
+## 7. Summary
+
+- The CSMS **must register vehicles** and keep their **SoC updated** in energyBrain.
+- **Chargepoints** and **sessions** must exist before retrieving optimizations.
+- `/optimizations` returns a **time–power schedule**.
+- You can apply that schedule:
+  - Through **direct CSMS logic**, or
+  - By sending **OCPP SetChargingProfile/SetSchedule** messages to chargers.
+- Always test integrations in **sandbox** before switching to **production**.
