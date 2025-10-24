@@ -61,26 +61,14 @@
     }
   },
   "logo": {
-    "light": "/ergLocale.png",
+    "light": "/eL-black.png",
     "dark": "/eL-white.png",
     "href": "https://example.com"
   },
-  "navbar": {
-    "links": [
-      {
-        "label": "Community",
-        "href": "https://example.com/community"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Get Started",
-      "href": "https://example.com/start"
-    }
-  },
+  "navbar": {},
   "footer": {
     "socials": {
-      "linkedin": "https://www.linkedin.com/company/example",
+      "linkedin": "https://www.linkedin.com/company/erglocale/posts/?feedView=all",
       "reddit": "https://github.com/example"
     },
     "links": [
