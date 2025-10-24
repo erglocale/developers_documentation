@@ -85,19 +85,40 @@
     },
     "links": [
       {
+        "header": "Products",
+        "items": [
+          {
+            "label": "ergOS",
+            "href": "https://erglocale.com/products/ergOS"
+          },
+          {
+            "label": "ergOptimize",
+            "href": "https://erglocale.com/products/ergOptimize"
+          },
+          {
+            "label": "ergCompare",
+            "href": "https://erglocale.com/products/ergCompare"
+          }
+        ]
+      },
+      {
         "header": "Resources",
         "items": [
           {
-            "label": "Customers",
-            "href": "https://example.com/customers"
+            "label": "Announcements",
+            "href": "https://erglocale.com/announcements"
           },
           {
-            "label": "Enterprise",
-            "href": "https://example.com/enterprise"
+            "label": "Blog",
+            "href": "https://erglocale.com/blog"
           },
           {
-            "label": "Request Preview",
-            "href": "https://example.com/preview"
+            "label": "Case Studies",
+            "href": "https://erglocale.com/case_study"
+          },
+          {
+            "label": "Developers",
+            "href": "https://abc.com"
           }
         ]
       },
@@ -105,16 +126,33 @@
         "header": "Company",
         "items": [
           {
-            "label": "Careers",
-            "href": "https://example.com/careers"
+            "label": "About Us",
+            "href": "https://erglocale.com/about-us"
           },
           {
-            "label": "Blog",
-            "href": "https://example.com/blog"
+            "label": "Terms and Conditions",
+            "href": "https://erglocale.com/terms_and_condition"
           },
           {
             "label": "Privacy Policy",
-            "href": "https://example.com/legal/privacy"
+            "href": "https://erglocale.com/privacy_policy"
+          },
+          {
+            "label": "Refund Policy",
+            "href": "https://erglocale.com/refund_policy"
+          },
+          {
+            "label": "Account Deletion",
+            "href": "https://erglocale.com/account_deletion"
+          }
+        ]
+      },
+      {
+        "header": "Contact",
+        "items": [
+          {
+            "label": "hello@ergLocale.com",
+            "href": "https://abc.com"
           }
         ]
       }
