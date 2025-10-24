@@ -15,15 +15,89 @@ Use your credentials to access your workspace.
   _(Screenshot: “Network map + solar forecast graph”)_
 
 <Frame>
+  ![Network Pn](/images/network.png)
+</Frame>
+
+<p />
+
+<Frame>
+  ![Create Network Pn](/images/create-network.png)
+</Frame>
+
+### 3. Charge Points
+
+- Navigate to **Charge Points → Create Charge Point**
+- Assign to an existing network.
+- Enter max capacity, type (AC/DC), and connector details.
+- All CSMS charge points requiring optimization should exist here.\
+  _(Screenshot: list of connectors with their max power)_
+
+<Frame>
+  ![Chargepoints Pn](/images/chargepoints.png)
+</Frame>
+
+<p />
+
+<CardGroup cols={2}>
+  <Card href="#">
+    ![Create Chargepoint Pn](/images/create-chargepoint.png)
+  </Card>
+  <Card href="#">
+    <img
+      src="/images/add-connector.png"
+      alt="Add Connector Pn"
+      title="Add Connector Pn"
+      className="mx-auto"
+      style={{ width:"86%" }}
+    />
+  </Card>
+</CardGroup>
+
+### 4. Vehicles
+
+- Go to **Vehicles → Create Vehicle**
+- Input VIN, license plate, battery size, target SoC, and max power.\
+  _(Screenshot: Vehicle info card)_
+
+> ⚠️ Vehicles must be onboarded for optimization algorithms to function.
+
+<Frame>
   <img
-    src="/images/networks.png"
-    alt="Networks Pn"
-    title="Networks Pn"
-    className="mx-auto"
-    style={{ width:"80%" }}
+    src="/images/vehicles.png"
+    alt="Vehicles Pn"
+    title="Vehicles Pn"
+    style={{ width:"100%" }}
   />
 </Frame>
 
-<Card color="#f29898" horizontal>
-  ![Networks Pn](/images/networks.png)
-</Card>
+### 5. Charging Sessions
+
+- Go to **Sessions → Create New Session**
+- Choose the vehicle and associated charge point connector.
+- The session captures active charging data.\
+  _(Screenshot: session list)_
+
+<Frame>
+  ![Sessions Pn](/sessions.png)
+</Frame>
+
+<p />
+
+<Frame>
+  ![Session Detail Pn](/session-detail.png)
+</Frame>
+
+<p />
+
+<Frame>
+  ![Create Session Pn](/images/create-session.png)
+</Frame>
+
+### 6. Optimizations
+
+- Go to **Optimizations → Select Network**
+- View the **Solar Forecast** + **Predicted Power Usage**
+- Adjust grid/solar limit overlays
+- Click **View raw data** to get underlying schedule or export data via API
+
+(Screenshot: forecast + cost graph)
