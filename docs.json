@@ -62,7 +62,7 @@
   },
   "logo": {
     "light": "/ergLocale.png",
-    "dark": "/ergLocale.png",
+    "dark": "/eL-white.png",
     "href": "https://example.com"
   },
   "navbar": {
